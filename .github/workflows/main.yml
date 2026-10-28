@@ -1,0 +1,51 @@
+name: Java architecture comparison
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  control:
+    name: Control - literal x64
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Set up Java - control
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          architecture: x64
+
+      - name: Show Java version and architecture
+        run: java -XshowSettings:properties -version
+
+  candidate:
+    name: Candidate - validated issue body
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Validate architecture input
+        shell: bash
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          if [[ "$ISSUE_BODY" != "x64" ]]; then
+            echo "Rejected: issue body must contain exactly x64."
+            exit 1
+          fi
+          echo "Accepted architecture: x64"
+      - name: Set up Java - candidate
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          architecture: ${{ github.event.issue.body }}
+
+      - name: Show Java version and architecture
+        run: java -XshowSettings:properties -version
