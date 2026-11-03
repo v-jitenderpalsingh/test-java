@@ -1,0 +1,62 @@
+name: Test for Issues
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+
+
+jobs:
+  job_1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Create local-JDK fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/fake-jdk"
+          printf '%s\n' \
+            'JAVA_VERSION="17.0.1"' \
+            'JAVA_RUNTIME_VERSION="17.0.1+1"' \
+            > "$RUNNER_TEMP/fake-jdk/release"
+          tar -C "$RUNNER_TEMP" \
+            -czf "$RUNNER_TEMP/fake-jdk.tar.gz" fake-jdk
+          printf '%s\n' 'FIXTURE_READY=1'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'jdkfile'
+          jdk-file: ${{ runner.temp }}/fake-jdk.tar.gz
+          architecture: ${{ github.event.issue.body }}
+
+      - name: Check version
+        run: java --version
+      
+      - name: Print Exported Architecture
+        shell: bash
+        run: |
+          echo "architecture: ${{ steps.setup-java.outputs.architecture }}"
+          echo "JAVA_HOME_17_X64: ${JAVA_HOME_17_X64}"
+          echo "TESTMARKER_A: ${TESTMARKER_A}"
+          echo "TESTMARKER_B: ${TESTMARKER_B}"
+  
+  job_2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Test if exported variables are set
+        shell: bash
+        run: |
+          echo "architecture: ${{ steps.setup-java.outputs.architecture }}"
+          echo "TESTMARKER_A: ${TESTMARKER_A}"
+          echo "TESTMARKER_B: ${TESTMARKER_B}"
+  
