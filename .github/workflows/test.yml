@@ -40,7 +40,7 @@ jobs:
           printf '%s\n' 'FIXTURE_READY=1'
 
       - name: Ordinary architecture control
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c
+        uses: v-mahabaleshwars/setup-java@fix/validate-architecture-token
         with:
           distribution: jdkfile
           java-version: '17.0.1'
@@ -92,7 +92,7 @@ jobs:
           printf '%s\n' 'FIXTURE_READY=1'
 
       - name: Candidate architecture from issue body
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c
+        uses: v-mahabaleshwars/setup-java@fix/validate-architecture-token
         with:
           distribution: jdkfile
           java-version: '17.0.1'
