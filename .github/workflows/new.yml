@@ -28,6 +28,12 @@ jobs:
             -czf "$RUNNER_TEMP/fake-jdk.tar.gz" fake-jdk
           printf '%s\n' 'FIXTURE_READY=1'
 
+      - name: set variable
+        run: echo "VAR1=Hello" >> $GITHUB_ENV
+
+      - name: print variable
+        run: echo "VAR1: ${VAR1}"
+
       - name: Set up JDK 17
         uses: actions/setup-java@v6
         with:
@@ -39,13 +45,14 @@ jobs:
       - name: Check version
         run: java --version
       
-      - name: Print Exported Architecture
+      - name: Print variables
         shell: bash
         run: |
           echo "architecture: ${{ steps.setup-java.outputs.architecture }}"
           echo "JAVA_HOME_17_X64: ${JAVA_HOME_17_X64}"
           echo "TESTMARKER_A: ${TESTMARKER_A}"
           echo "TESTMARKER_B: ${TESTMARKER_B}"
+          echo "VAR1: ${VAR1}"
   
   job_2:
     runs-on: ubuntu-latest
@@ -53,10 +60,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@main
 
-      - name: Test if exported variables are set
+      - name: Print variables from job_1
         shell: bash
         run: |
           echo "architecture: ${{ steps.setup-java.outputs.architecture }}"
           echo "TESTMARKER_A: ${TESTMARKER_A}"
           echo "TESTMARKER_B: ${TESTMARKER_B}"
+          echo "VAR1: ${VAR1}"
   
